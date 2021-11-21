@@ -126,5 +126,5 @@ exp			::=		INT:i								{: RESULT = new AST_EXP_INT(i);          :}
 					| exp:e1 LESS_THAN exp:e2			{: RESULT = new AST_EXP_BINOP(e1, e2, 1);:}
 					| exp:e1 GREATER_THAN exp:e2		{: RESULT = new AST_EXP_BINOP(e1, e2, 1);:}
 					| exp:e1 EQUALS exp:e2				{: RESULT = new AST_EXP_BINOP(e1, e2, 1);:}
-					| exp:e								{: RESULT = new AST_EXP_PAREN(e);        :}
+					| LPAREN exp:e RPAREN				{: RESULT = new AST_EXP_PAREN(e);        :}
 					;
