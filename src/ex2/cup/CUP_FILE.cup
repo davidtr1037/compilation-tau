@@ -103,15 +103,22 @@ start with stmtList;
 stmtList	::=		stmt:s	stmtList:l		{: RESULT = new AST_STMT_LIST(s,l);    :}
 					| stmt:s				{: RESULT = new AST_STMT_LIST(s,null); :}
 					;
+expList	::=		    exp:s	expList:l		{: RESULT = new AST_EXP_LIST(s,l);    :}
+					| exp:s				    {: RESULT = new AST_EXP_LIST(s,null); :}
+					;
 
 var			::=		ID:name								{: RESULT = new AST_VAR_SIMPLE(name);       :}
 					| var:v DOT ID:fieldName			{: RESULT = new AST_VAR_FIELD(v,fieldName); :} 
 					| var:v LBRACK exp:e RBRACK			{: RESULT = new AST_VAR_SUBSCRIPT(v,e);     :} 
 					;
 					
-stmt		::=		var:v ASSIGN exp:e SEMICOLON								{: RESULT = new AST_STMT_ASSIGN(v,e); :}
-					| IF    LPAREN exp:cond RPAREN LBRACE stmtList:body RBRACE	{: RESULT = new AST_STMT_IF(   cond,body); :}
-					| WHILE LPAREN exp:cond RPAREN LBRACE stmtList:body RBRACE	{: RESULT = new AST_STMT_WHILE(cond,body); :}
+stmt		::=		varDec:v                                                    {: RESULT = new AST_STMT_VAR_DEC(v);        :}
+                    | var:v ASSIGN exp:e SEMICOLON								{: RESULT = new AST_STMT_ASSIGN(v,e);       :}
+                    | var:v ASSIGN newExp:e SEMICOLON							{: RESULT = new AST_STMT_ASSIGN_NEW(v,e);   :}
+                    | RETURN SEMICOLON                                          {: RESULT = new AST_STMT_RETURN_NULL();     :}
+                    | RETURN exp:e SEMICOLON                                    {: RESULT = new AST_STMT_RETURN_EXP(e);     :}
+					| IF    LPAREN exp:cond RPAREN LBRACE stmtList:body RBRACE	{: RESULT = new AST_STMT_IF(   cond,body);  :}
+					| WHILE LPAREN exp:cond RPAREN LBRACE stmtList:body RBRACE	{: RESULT = new AST_STMT_WHILE(cond,body);  :}
 					;
 
 exp			::=		INT:i								{: RESULT = new AST_EXP_INT(i);          :}
