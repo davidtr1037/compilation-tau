@@ -8,7 +8,7 @@ public class AST_STMT_RETURN_EXP extends AST_STMT
     /*******************/
     /*  CONSTRUCTOR(S) */
     /*******************/
-    public AST_STMT_ASSIGN()
+    public AST_STMT_RETURN_EXP(AST_EXP exp)
     {
         /******************************/
         /* SET A UNIQUE SERIAL NUMBER */

@@ -8,7 +8,7 @@ public class AST_STMT_ID extends AST_STMT
     /******************/
     /* CONSTRUCTOR(S) */
     /******************/
-    public AST_STMT_VAR_DEC(String fieldName){
+    public AST_STMT_ID(String fieldName){
         /******************************/
         /* SET A UNIQUE SERIAL NUMBER */
         /******************************/
