@@ -1,13 +1,14 @@
 package AST;
+import
 
-public class AST_STMT_VAR_DEC extends AST_STMT
+public class AST_STMT_ID extends AST_STMT
 {
-    public AST_VAR_DEC varDec;
+    public String fieldName;
 
     /******************/
     /* CONSTRUCTOR(S) */
     /******************/
-    public AST_STMT_VAR_DEC(AST_VAR_DEC varDec){
+    public AST_STMT_VAR_DEC(String fieldName){
         /******************************/
         /* SET A UNIQUE SERIAL NUMBER */
         /******************************/
@@ -16,43 +17,35 @@ public class AST_STMT_VAR_DEC extends AST_STMT
         /***************************************/
         /* PRINT CORRESPONDING DERIVATION RULE */
         /***************************************/
-        System.out.print("====================== stmt -> varDec\n");
+        System.out.print("====================== stmt -> ID();\n");
 
         /*******************************/
         /* COPY INPUT DATA NENBERS ... */
         /*******************************/
 
-        this.varDec = varDec;
+        this.fieldName = fieldName;
     }
 
     /****************************************************/
-    /* The default message for an stmt varDec AST node */
+    /* The default message for an stmt ID AST node */
     /**************************************************/
     public void PrintMe()
     {
         /*****************************************/
-        /* AST NODE TYPE = STMT VARDEC AST NODE */
+        /* AST NODE TYPE = STMT ID AST NODE */
         /***************************************/
-        System.out.print("AST NODE STMT VARDEC\n");
+        System.out.print("AST NODE STMT ID\n");
 
         /********************************/
-        /* RECURSIVELY PRINT varDec ... */
+        /* PRINT FIELDNAME ... */
         /*******************************/
-        if (varDec != null) varDec.PrintMe();
+        System.out.format("FIELD NAME( %s )\n",fieldName);
 
-        /*********************************/
-        /* Print to AST GRAPHIZ DOT file */
-        /*********************************/
+        /***************************************/
+        /* PRINT Node to AST GRAPHVIZ DOT file */
+        /***************************************/
         AST_GRAPHVIZ.getInstance().logNode(
             SerialNumber,
-            "STMT\nVARDEC");
-
-        /****************************************/
-        /* PRINT Edges to AST GRAPHVIZ DOT file */
-        /****************************************/
-        AST_GRAPHVIZ.getInstance().logEdge(SerialNumber,varDec.SerialNumber);
-
+            String.format("FIELD\n...->%s",fieldName));
     }
-}
-
 }
