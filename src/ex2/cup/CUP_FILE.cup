@@ -90,6 +90,9 @@ precedence left PLUS;
 precedence left MINUS;
 precedence left TIMES;
 precedence left DIVIDE;
+precedence left LESS_THAN;
+precedence left GREATER_THAN;
+precedence left EQUALS;
 
 /************************/
 /* START WITH: stmtList */
@@ -118,4 +121,10 @@ exp			::=		INT:i								{: RESULT = new AST_EXP_INT(i);          :}
 					| var:v								{: RESULT = new AST_EXP_VAR(v);          :}
 					| exp:e1 PLUS  exp:e2				{: RESULT = new AST_EXP_BINOP(e1, e2, 0);:}
 					| exp:e1 MINUS exp:e2				{: RESULT = new AST_EXP_BINOP(e1, e2, 1);:}
+					| exp:e1 TIMES exp:e2				{: RESULT = new AST_EXP_BINOP(e1, e2, 1);:}
+					| exp:e1 DIVIDE exp:e2				{: RESULT = new AST_EXP_BINOP(e1, e2, 1);:}
+					| exp:e1 LESS_THAN exp:e2			{: RESULT = new AST_EXP_BINOP(e1, e2, 1);:}
+					| exp:e1 GREATER_THAN exp:e2		{: RESULT = new AST_EXP_BINOP(e1, e2, 1);:}
+					| exp:e1 EQUALS exp:e2				{: RESULT = new AST_EXP_BINOP(e1, e2, 1);:}
+					| exp:e								{: RESULT = new AST_EXP_PAREN(e);        :}
 					;
