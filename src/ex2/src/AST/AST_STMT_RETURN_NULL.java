@@ -6,7 +6,7 @@ public class AST_STMT_RETURN_NULL extends AST_STMT
     /*******************/
     /*  CONSTRUCTOR(S) */
     /*******************/
-    public AST_STMT_ASSIGN()
+    public AST_STMT_RETURN_NULL()
     {
         /******************************/
         /* SET A UNIQUE SERIAL NUMBER */
