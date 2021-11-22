@@ -9,7 +9,7 @@ public class AST_STMT_VAR_ID_ARGS extends AST_STMT
     /******************/
 	/* CONSTRUCTOR(S) */
 	/******************/
-	public AST_VAR_FIELD(AST_VAR var,String fieldName, AST_EXP_LIST arg)
+	public AST_STMT_VAR_ID_ARGS(AST_VAR var,String fieldName, AST_EXP_LIST arg)
 	{
 		/******************************/
 		/* SET A UNIQUE SERIAL NUMBER */
