@@ -106,6 +106,8 @@ the class name can't be a primitive type (int, string, void).
 %even if \verb"d" is defined \textit{after} \verb"M" in the class.
 Table \ref{Table_Code_Examples_Use_Before_Def} summarizes these facts.
 \begin{table}[h]
+\caption{Referring to classes, methods and data members
+\label{Table_Code_Examples_Use_Before_Def}}
 \centering
 \begin{tabular}{|l|l|l|}
 \hline
@@ -149,8 +151,6 @@ Table \ref{Table_Code_Examples_Use_Before_Def} summarizes these facts.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \hline
 \end{tabular}
-\caption{Referring to classes, methods and data members
-\label{Table_Code_Examples_Use_Before_Def}}
 \end{table}
 \paragraph{Methods overloading} is \textit{illegal} in \plname,
 with the obvious exception of overriding a method in a derived class.
@@ -158,6 +158,8 @@ Similarly, it is illegal to define a variable with the same name of
 a previously defined variable (shadowing), or a previously defined method.
 Table \ref{Table_Code_Examples_Overload_Override} summarizes these facts.
 \begin{table}[h]
+\caption{Method overloading and variable shadowing are both illegal in \plname.
+\label{Table_Code_Examples_Overload_Override}}
 \centering
 \begin{tabular}{|l|l|l|}
 \hline
@@ -222,14 +224,14 @@ Table \ref{Table_Code_Examples_Overload_Override} summarizes these facts.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \hline
 \end{tabular}
-\caption{Method overloading and variable shadowing are both illegal in \plname.
-\label{Table_Code_Examples_Overload_Override}}
 \end{table}
 \paragraph{Inheritance} if class \verb"Son" is derived from class \verb"Father",
 then any place in the program that semantically allows an expression of type \verb"Father",
 should semantically allow an expression of type \verb"Son".
-For example,
+For example, see Table~\ref{Table_Code_Examples_Son_Class_Instead_Of_Father_Class}.
 \begin{table}[h]
+\caption{Class Son is a semantically valid input for foo.
+\label{Table_Code_Examples_Son_Class_Instead_Of_Father_Class}}
 \centering
 \begin{tabular}{ | l  | l | }
 \hline
@@ -241,14 +243,15 @@ For example,
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \hline
 \end{tabular}
-\caption{Class Son is a semantically valid input for foo.
-\label{Table_Code_Examples_Son_Class_Instead_Of_Father_Class}}
 \end{table}
+
 \paragraph{Nil expressions} any place in the program that
 semantically allows an expression of type class,
 should semantically allow \verb"nil" instead.
-For instance,
+For example, see Table~\ref{Table_Code_Examples_nil_Instead_Of_Any_Class}.
 \begin{table}[h]
+\caption{nil sent instead of a (Father) class is semantically allowed.
+\label{Table_Code_Examples_nil_Instead_Of_Any_Class}}
 \centering
 \begin{tabular}{ | l | l | }
 \hline
@@ -259,8 +262,6 @@ For instance,
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \hline
 \end{tabular}
-\caption{nil sent instead of a (Father) class is semantically allowed.
-\label{Table_Code_Examples_nil_Instead_Of_Any_Class}}
 \end{table}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % SUB-SUB-SECTION :: Arrays %
@@ -268,7 +269,7 @@ For instance,
 \subsubsection{Arrays}
 \label{subsubsection_Arrays}
 Arrays can only be defined in the uppermost (global) scope.
-They are defined with respect to some previously defined type, as in the following example:
+They are defined with respect to some previously defined type (that can't be the type \textit{void}), as in the following example:
 \[
 \verb"array IntArray = int[];"
 \]
@@ -277,8 +278,11 @@ Defining an integer matrix, for example, is possible as follows:
 \verb"array IntArray = int[]; array IntMat = IntArray[];"
 \]
 In addition, any place in the program that semantically allows an expression of type array,
-should semantically allow \verb"nil" instead. For instance,
+should semantically allow \verb"nil" instead.
+For example, see Table~\ref{Table_Code_Examples_nil_Instead_Of_Any_Array}.
 \begin{table}[h]
+\caption{nil sent instead of an integer array is semantically allowed.
+\label{Table_Code_Examples_nil_Instead_Of_Any_Array}}
 \centering
 \begin{tabular}{ | l | l | }
 \hline
@@ -289,16 +293,16 @@ should semantically allow \verb"nil" instead. For instance,
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \hline
 \end{tabular}
-\caption{nil sent instead of an integer array is semantically allowed.
-\label{Table_Code_Examples_nil_Instead_Of_Any_Array}}
 \end{table}
 \paragraph{Note} that allocating arrays with the new operator
 must be done with an \textit{integral size} (if the size expression is \textbf{constant}, it must be greater than zero).
 Similarly, accessing an array entry is semantically valid
 only when the \textit{subscript expression has an integer type}.
 Note further that if two arrays of type \verb"T" are defined,
-they are \textit{not} interchangeable:
+they are \textit{not} interchangeable (see Table~\ref{Table_Code_Examples_nil_Instead_Of_Any_Array}).
 \begin{table}[h]
+\caption{Non interchangeable array types.
+\label{Table_Code_Examples_nil_Instead_Of_Any_Array}}
 \centering
 \begin{tabular}{ | l | l | }
 \hline
@@ -315,8 +319,6 @@ they are \textit{not} interchangeable:
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \hline
 \end{tabular}
-\caption{Non interchangeable array types.
-\label{Table_Code_Examples_nil_Instead_Of_Any_Array}}
 \end{table}  
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % SUB-SECTION :: Assignments %
@@ -338,6 +340,8 @@ a declared data member inside a class can be initialized \textit{only with a con
 can be used, and even a simple expression like $5+6$ is forbidden.
 Table \ref{Table_Code_Examples_Assignments} summarizes these facts.
 \begin{table}[h]
+\caption{Assignments.}
+\label{Table_Code_Examples_Assignments}
 \centering
 \begin{tabular}{|l|l|l|}
 \hline
@@ -397,8 +401,6 @@ Table \ref{Table_Code_Examples_Assignments} summarizes these facts.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \hline
 \end{tabular}
-\caption{Assignments.
-\label{Table_Code_Examples_Assignments}}
 \end{table}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % SUB-SECTION :: If and While Statements %
@@ -443,6 +445,8 @@ But, in contrast, it is \textit{illegal} to compare a string variable to \verb"n
 The resulting type of a semantically valid comparison is the primitive type int.
 Table \ref{Table_Code_Examples_Equality_Testing} summarizes these facts.
 \begin{table}[h]
+\caption{Equality testing.}
+\label{Table_Code_Examples_Equality_Testing}
 \centering
 \begin{tabular}{|l|l|l|}
 \hline
@@ -480,8 +484,6 @@ Table \ref{Table_Code_Examples_Equality_Testing} summarizes these facts.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \hline
 \end{tabular}
-\caption{Equality testing.
-\label{Table_Code_Examples_Equality_Testing}}
 \end{table}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % SUB-SECTION :: Binary Operations %
@@ -495,6 +497,8 @@ The resulting type of a semantically valid binary operation is the primitive typ
 with the single exception of adding two strings, where the resulting type is a string.
 Table \ref{Table_Code_Examples_Binary_Operations} summarizes these facts.
 \begin{table}[h]
+\caption{Binary Operations.}
+\label{Table_Code_Examples_Binary_Operations}
 \centering
 \begin{tabular}{|l|l|l|}
 \hline
@@ -531,8 +535,6 @@ Table \ref{Table_Code_Examples_Binary_Operations} summarizes these facts.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \hline
 \end{tabular}
-\caption{Binary Operations.
-\label{Table_Code_Examples_Binary_Operations}}
 \end{table}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % SUB-SECTION :: Scope Rules %
@@ -584,6 +586,8 @@ The signatures of these functions are as follows:\\ \\
 \\
 Library functions are treated as if they are defined in the global (main) scope.
 \begin{table}[h]
+\caption{Scope Rules.}
+\label{Table_Code_Examples_Scope_Rules}
 \centering
 \begin{tabular}{|l|l|l|}
 \hline
@@ -640,8 +644,6 @@ Library functions are treated as if they are defined in the global (main) scope.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \hline
 \end{tabular}
-\caption{Scope Rules.
-\label{Table_Code_Examples_Scope_Rules}}
 \end{table}
 
 %%%%%%%%%%%%%%%%%%%%
