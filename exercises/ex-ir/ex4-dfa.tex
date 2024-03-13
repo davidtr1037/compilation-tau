@@ -64,19 +64,19 @@ an intermediate representation (IR) of the program.
 \end{enumerate}
 
 The input for this last exercise is a (single) text file containing an \plname
-program in the subset defined below, and the output is a (single) text file that contains an indication of whether the program does not access uninitialized variables or a list of such variables if it does. 
+program in the subset defined below,
+and the output is a (single) text file that contains an indication of whether the program does not access uninitialized variables or a list of such variables if it does.
 
 \section{The Input Programs}
 \subsection{Syntax}
-To simplify the exercise, you may assume that the program consists only of a main function with signature \texttt{void main()}. Furthermore, 
-\texttt{main} may only use (global and local) variables of type \texttt{int} and the library function \texttt{PrintInt}.
+To simplify the exercise, you may assume that the program consists only of a main function with signature \texttt{void main()}.
+Furthermore, \texttt{main} may only use (global and local) variables of type \texttt{int} and the library function \texttt{PrintInt}.
 
 \subsection{Semantics of Initializations}
 Recall that both global and local variables may be initialized when defined.
 The initial value can be any numerical expression over previously defined variables.
-Thus, when these initializations occur, they should be in the same order of appearance as in the original program. 
-Specifically, before entering main, all global variables with initialized values
-should be evaluated.
+Thus, when these initializations occur, they should be in the same order of appearance as in the original program.
+Specifically, before entering main, all global variables with initialized values should be evaluated.
  
 \section{Uninitialized Variables Analysis}
 
