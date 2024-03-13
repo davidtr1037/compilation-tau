@@ -1,0 +1,11 @@
+class MyClass{
+    void what(){
+        PrintString("what");
+    }
+}
+
+void main() {
+  MyClass wow := new MyClass;
+  wow.what();
+}
+ 

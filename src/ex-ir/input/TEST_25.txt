@@ -1,0 +1,12 @@
+int boof() {
+    int i := -5;
+    int j := -32767;
+    while (i > (j - 1)) {
+        i := i - 505;
+    }
+    return i + 2;
+}
+
+void main() {
+    PrintInt(boof() + boof() + boof());
+}
