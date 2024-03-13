@@ -21,3 +21,10 @@
 **/*.synctex.gz
 **/*.toc
 
+src/ex-ir/.DS_Store
+src/.DS_Store
+exercises/ex-ir/ex4-dfa.pdf
+exercises/ex-ir/ex4-dfa.fls
+exercises/ex-ir/ex4-dfa.fdb_latexmk
+exercises/ex-ir/ex4-dfa.blg
+exercises/ex-ir/ex4-dfa.bbl

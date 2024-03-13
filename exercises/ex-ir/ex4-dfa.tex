@@ -35,7 +35,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % DATE = SUBMISSION DATE HERE %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\date{Due 19/4/2024 before 23:59}
+\date{Due 18/4/2024 before 23:59}
 
 %%%%%%%%%
 % TITLE %
@@ -148,7 +148,7 @@ y
  
 The program in \cref{fig:example-loop} also has use-before-set errors involving variables \texttt{g}, \texttt{x}, and \texttt{y}.
 Note that the use of \texttt{g} in \texttt{PrintInt(g)} is considered a use-before-set error because the loop body may never execute.
-Also, note that although \texttt{y} is involved in two potential use-before-def errors, it is printed only once.
+Also, note that although \texttt{y} is involved in two potential use-before-set errors (one when evaluating the condition of the \texttt{if} statement and one during the assignment \texttt{y := y - 1}), it is printed only once.
 
 The analysis \emph{should not} try to infer the infeasibility of paths at compile time.
 For example, we replace the declaration of \texttt{y} in \Cref{fig:example-loop} with:
