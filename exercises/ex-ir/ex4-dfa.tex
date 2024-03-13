@@ -198,7 +198,7 @@ void main() {
 }
 
 // expected output:
-// - - OK - -
+!OK
 \end{lstlisting}
 \caption{A program which does not access uninitialized variables.}
 \label{fig:example-ok}
@@ -210,22 +210,21 @@ void main() {
 The input for this exercise is a single text file, the input program in the assumed subset of  \plname.
 
 \subsection{Output}
-The output is a single text file that contains either the string \texttt{--OK--}
-if there are no read accesses from uninitialized variables or a sorted list of the names of the uninitialized variables that were accessed. The exercise's skeleton contains helper functions that format the output.
+\label{sec:output}
+The output is a single text file that contains either the string \texttt{!OK}
+if there are no read accesses from uninitialized variables or a sorted list of the names of the uninitialized variables that were accessed.
 
 \subsection{Skeleton}
-The skeleton for this exercise can be found \href{https://github.com/davidtr1037/compilation-tau/tree/master/src/ex4-dfa}{here}.
+The skeleton for this exercise can be found \href{https://github.com/davidtr1037/compilation-tau/tree/master/src/ex-ir}{here}.
 The skeleton contains a partial implementation of the IR, which you may adapt to your needs.
-
-The skeleton also contains code for converting the IR into MIPS code, but you do not need to use this code in this exercise.
 
 The makefile must be located in the following path:
 \begin{itemize}
-    \item ex4-dfa/Makefile
+    \item ex-ir/Makefile
 \end{itemize}
 This makefile will build the analyzer (a runnable jar file) in the following path:
 \begin{itemize}
-    \item ex4-dfa/ANALYZER
+    \item ex-ir/ANALYZER
 \end{itemize}
 Feel free to reuse the makefile supplied in the skeleton,
 or write a new one if you want to.
@@ -234,11 +233,11 @@ or write a new one if you want to.
 \textit{ANALYZER} receives two parameters (file paths):
 \begin{itemize}
     \item \textit{input} (input file path)
-    \item \textit{output} (output file path containing the MIPS code)
+    \item \textit{output} (output file path, as explained in Section~\ref{sec:output})
 \end{itemize}
 
 \subsection{Compiling}
-To build the skeleton, run the following command (in the \textit{src/ex4-dfa} directory): \\
+To build the skeleton, run the following command (in the \textit{src/ex-ir} directory): \\
 \texttt{\$ make compile} \\
 This performs the following steps:
 \begin{itemize}
