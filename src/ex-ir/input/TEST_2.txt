@@ -1,0 +1,15 @@
+int g0 := 0;
+int g:= g0 + 1;
+void main() {
+    int x := g * 2 + 3;
+    int y := 10;
+    int z;
+    int w;
+
+    while (y > 0) {
+        z := x + 1 + y;
+        g := 1;
+        y := y - 1;
+    }
+    PrintInt(g);
+}
