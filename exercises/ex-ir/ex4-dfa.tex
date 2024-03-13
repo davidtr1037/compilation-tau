@@ -146,14 +146,17 @@ y
 \label{fig:example-flow}
 \end{figure} 
  
-The program in \cref{fig:example-loop} also has use-before-set errors involving variables
-\texttt{g}, \texttt{x}, and \texttt{y}.
+The program in \cref{fig:example-loop} also has use-before-set errors involving variables \texttt{g}, \texttt{x}, and \texttt{y}.
 Note that the use of \texttt{g} in \texttt{PrintInt(g)} is considered a use-before-set error because the loop body may never execute.
 Also, note that although \texttt{y} is involved in two potential use-before-def errors, it is printed only once.
 
-The analysis \emph{should not} try to infer the infeasibility of passes at compile time. For example, we replace the declaration of \texttt{y} in \Cref{fig:example-loop} with 
-\texttt{int y := 10;}
-then the analysis should still report that variables \texttt{x} and \texttt{g} may be used-before-set, although the body of the loop in the program in \cref{fig:example-loop} is always executed and thus assigns an initialized value to \texttt{g}.
+The analysis \emph{should not} try to infer the infeasibility of paths at compile time.
+For example, we replace the declaration of \texttt{y} in \Cref{fig:example-loop} with:
+\begin{lstlisting}
+int y := 10;
+\end{lstlisting}
+then the analysis should still report that variables \texttt{x} and \texttt{g} may be used-before-set,
+although the body of the loop in the program in \cref{fig:example-loop} is always executed and thus assigns an initialized value to \texttt{g}.
 
 \begin{figure}
 \centering
