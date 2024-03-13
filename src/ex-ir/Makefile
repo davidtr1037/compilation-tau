@@ -65,11 +65,11 @@ compile:
 	@echo "*******************************"
 	@echo "*                             *"
 	@echo "*                             *"
-	@echo "* [0] Remove COMPILER program *"
+	@echo "* [0] Remove ANALYZER program *"
 	@echo "*                             *"
 	@echo "*                             *"
 	@echo "*******************************"
-	rm -rf COMPILER
+	rm -rf ANALYZER
 	@echo "\n"
 	@echo "************************************************************"
 	@echo "*                                                          *"
@@ -117,7 +117,7 @@ compile:
 	@echo "*                                                         *"
 	@echo "*                                                         *"
 	@echo "***********************************************************"
-	jar cfm COMPILER ${MANIFEST_FILE} -C ${BIN_DIR} .
+	jar cfm ANALYZER ${MANIFEST_FILE} -C ${BIN_DIR} .
 	
 everything:
 	clear
@@ -128,7 +128,7 @@ everything:
 	@echo "*                            *"
 	@echo "*                            *"
 	@echo "******************************"
-	rm -rf COMPILER
+	rm -rf ANALYZER
 	@echo "\n"
 	@echo "************************************************************"
 	@echo "*                                                          *"
@@ -176,7 +176,7 @@ everything:
 	@echo "*                                                         *"
 	@echo "*                                                         *"
 	@echo "***********************************************************"
-	jar cfm COMPILER ${MANIFEST_FILE} -C ${BIN_DIR} .
+	jar cfm ANALYZER ${MANIFEST_FILE} -C ${BIN_DIR} .
 	@echo "\n"
 	@echo "*****************************"
 	@echo "*                           *"
@@ -185,7 +185,7 @@ everything:
 	@echo "*                           *"
 	@echo "*                           *"
 	@echo "*****************************"
-	java -jar COMPILER ${INPUT} ${OUTPUT}
+	java -jar ANALYZER ${INPUT} ${OUTPUT}
 	@echo "\n"
 	@echo "***********************************************************"
 	@echo "*                                                         *"
