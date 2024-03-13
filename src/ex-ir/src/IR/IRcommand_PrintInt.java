@@ -11,7 +11,6 @@ package IR;
 /* PROJECT IMPORTS */
 /*******************/
 import TEMP.*;
-import MIPS.*;
 
 public class IRcommand_PrintInt extends IRcommand
 {
@@ -20,13 +19,5 @@ public class IRcommand_PrintInt extends IRcommand
 	public IRcommand_PrintInt(TEMP t)
 	{
 		this.t = t;
-	}
-	
-	/***************/
-	/* MIPS me !!! */
-	/***************/
-	public void MIPSme()
-	{
-		MIPSGenerator.getInstance().print_int(t);
 	}
 }

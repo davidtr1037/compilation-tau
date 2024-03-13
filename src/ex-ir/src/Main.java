@@ -4,7 +4,6 @@ import java.io.PrintWriter;
 import java_cup.runtime.Symbol;
 import AST.*;
 import IR.*;
-import MIPS.*;
 
 public class Main
 {
@@ -61,21 +60,6 @@ public class Main
 			/**********************/
 			AST.IRme();
 			
-			/***********************/
-			/* [9] MIPS the IR ... */
-			/***********************/
-			IR.getInstance().MIPSme();
-
-			/**************************************/
-			/* [10] Finalize AST GRAPHIZ DOT file */
-			/**************************************/
-			AST_GRAPHVIZ.getInstance().finalizeFile();			
-
-			/***************************/
-			/* [11] Finalize MIPS file */
-			/***************************/
-			MIPSGenerator.getInstance().finalizeFile();			
-
 			/**************************/
 			/* [12] Close output file */
 			/**************************/

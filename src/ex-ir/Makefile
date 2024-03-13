@@ -21,7 +21,6 @@ SRC_FILES                 = ${SRC_DIR}/*.java              \
                             ${SRC_DIR}/IR/*.java           \
                             ${SRC_DIR}/AST/*.java          \
                             ${SRC_DIR}/TEMP/*.java         \
-                            ${SRC_DIR}/MIPS/*.java         \
                             ${SRC_DIR}/TYPES/*.java        \
                             ${SRC_DIR}/SYMBOL_TABLE/*.java
 EXTERNAL_JAR_FILES        = ${EXTERNAL_JARS_DIR}/java-cup-11b-runtime.jar
@@ -55,7 +54,7 @@ CUP_FLAGS =                                \
 # DEFINITIONS :: PARSER #
 #########################
 INPUT    = ${INPUT_DIR}/Input.txt
-OUTPUT   = ${OUTPUT_DIR}/MIPS.txt
+OUTPUT   = ${OUTPUT_DIR}/Output.txt
 
 ##########
 # TARGET #
@@ -195,5 +194,3 @@ everything:
 	@echo "*                                                         *"
 	@echo "***********************************************************"
 	@echo "\n"
-	# [11] Run spim and redirect its output (un-comment after codegen + register allocation is implemented)
-	#spim -f ${OUTPUT_DIR}/MIPS.txt #> ${OUTPUT_DIR}/MIPS_OUTPUT.txt

@@ -4,7 +4,6 @@ import TYPES.*;
 import SYMBOL_TABLE.*;
 import TEMP.*;
 import IR.*;
-import MIPS.*;
 
 public class AST_DEC_FUNC extends AST_DEC
 {

@@ -5,7 +5,6 @@ Class-Path: ./external_jars/java-cup-11b-runtime.jar
   ./bin/IR/*.class
   ./bin/AST/*.class
   ./bin/TEMP/*.class
-  ./bin/MIPS/*.class
   ./bin/TYPES/*.class
   ./bin/SYMBOL_TABLE/*.class
 Main-Class: Main

@@ -40,15 +40,6 @@ public class IR
 		}
 	}
 	
-	/***************/
-	/* MIPS me !!! */
-	/***************/
-	public void MIPSme()
-	{
-		if (head != null) head.MIPSme();
-		if (tail != null) tail.MIPSme();
-	}
-
 	/**************************************/
 	/* USUAL SINGLETON IMPLEMENTATION ... */
 	/**************************************/

@@ -11,7 +11,6 @@ package IR;
 /* PROJECT IMPORTS */
 /*******************/
 import TEMP.*;
-import MIPS.*;
 
 public class IRcommand_Load extends IRcommand
 {
@@ -22,13 +21,5 @@ public class IRcommand_Load extends IRcommand
 	{
 		this.dst      = dst;
 		this.var_name = var_name;
-	}
-	
-	/***************/
-	/* MIPS me !!! */
-	/***************/
-	public void MIPSme()
-	{
-		MIPSGenerator.getInstance().load(dst,var_name);
 	}
 }

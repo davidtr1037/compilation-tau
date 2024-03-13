@@ -11,7 +11,6 @@ package IR;
 /* PROJECT IMPORTS */
 /*******************/
 import TEMP.*;
-import MIPS.*;
 
 public class IRcommand_Allocate extends IRcommand
 {
@@ -20,13 +19,5 @@ public class IRcommand_Allocate extends IRcommand
 	public IRcommand_Allocate(String var_name)
 	{
 		this.var_name = var_name;
-	}
-	
-	/***************/
-	/* MIPS me !!! */
-	/***************/
-	public void MIPSme()
-	{
-		MIPSGenerator.getInstance().allocate(var_name);
 	}
 }

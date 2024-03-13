@@ -2,7 +2,6 @@ package AST;
 
 import TEMP.*;
 import IR.*;
-import MIPS.*;
 
 public class AST_STMT_WHILE extends AST_STMT
 {

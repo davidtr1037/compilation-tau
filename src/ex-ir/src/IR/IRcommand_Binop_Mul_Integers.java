@@ -11,7 +11,6 @@ package IR;
 /* PROJECT IMPORTS */
 /*******************/
 import TEMP.*;
-import MIPS.*;
 
 public class IRcommand_Binop_Mul_Integers extends IRcommand
 {
@@ -24,12 +23,5 @@ public class IRcommand_Binop_Mul_Integers extends IRcommand
 		this.dst = dst;
 		this.t1 = t1;
 		this.t2 = t2;
-	}
-	/***************/
-	/* MIPS me !!! */
-	/***************/
-	public void MIPSme()
-	{
-		MIPSGenerator.getInstance().mul(dst,t1,t2);
 	}
 }
