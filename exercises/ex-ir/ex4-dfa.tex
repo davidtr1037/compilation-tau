@@ -12,6 +12,7 @@
 \usepackage{placeins}
 \usepackage{xcolor}
 \usepackage{listings}
+\usepackage{xspace}
 \usepackage[capitalise]{cleveref}
 
 %%%%%%%%%%%%%%%%%%
@@ -41,7 +42,7 @@
 %%%%%%%%%
 \maketitle
 
-\newcommand{\plname}{\textbf{L}\ }
+\newcommand{\plname}{\textbf{L}\xspace}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%
 % SECTION :: Introduction %
@@ -54,8 +55,7 @@ This time, we dive into the realm of the machine-independent optimizer.
 \section{Programming Assignment}
 The fourth exercise implements a dataflow analysis for \plname programs.
 Specifically, you need to implement an uninitialized variable analysis for (a subset of) \plname.
-
- The exercise can be roughly divided into three parts as follows:
+The exercise is roughly divided into three parts as follows:
 \begin{enumerate}
 \item Recursively traverse the AST to create
 an intermediate representation (IR) of the program.
