@@ -186,11 +186,3 @@ everything:
 	@echo "*****************************"
 	java -jar ANALYZER ${INPUT} ${OUTPUT}
 	@echo "\n"
-	@echo "***********************************************************"
-	@echo "*                                                         *"
-	@echo "*                                                         *"
-	@echo "* [10] Allocate registers (just for this running example) *"
-	@echo "*                                                         *"
-	@echo "*                                                         *"
-	@echo "***********************************************************"
-	@echo "\n"
