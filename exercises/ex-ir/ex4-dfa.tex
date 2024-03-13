@@ -1,0 +1,277 @@
+%%%%%%%%%%%%%%%%%%
+% DOCUMENT CLASS %
+%%%%%%%%%%%%%%%%%%
+\documentclass{article}
+
+%%%%%%%%%%%%
+% PACKAGES %
+%%%%%%%%%%%%
+\usepackage{hyperref}
+\usepackage{amsmath}
+\usepackage{multirow}
+\usepackage{placeins}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage[capitalise]{cleveref}
+
+%%%%%%%%%%%%%%%%%%
+% BEGIN DOCUMENT %
+%%%%%%%%%%%%%%%%%%
+
+\newcommand{\nr}[1]{{\color{red}[#1]}}
+\begin{document}
+
+%%%%%%%%%
+% TITLE %
+%%%%%%%%%
+\title{Exercise 4 (Dataflow Analysis)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% AUTHOR = COURSE NAME HERE %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\author{Compilation 0368:3133}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% DATE = SUBMISSION DATE HERE %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\date{Due 19/4/2024 before 23:59}
+
+%%%%%%%%%
+% TITLE %
+%%%%%%%%%
+\maketitle
+
+\newcommand{\plname}{\textbf{L}\ }
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% SECTION :: Introduction %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Introduction}
+We continue our journey of building a compiler
+for the invented object-oriented language \plname.
+This time, we dive into the realm of the machine-independent optimizer. 
+ 
+\section{Programming Assignment}
+The fourth exercise implements a dataflow analysis for \plname programs.
+Specifically, you need to implement an uninitialized variable analysis for (a subset of) \plname.
+
+ The exercise can be roughly divided into three parts as follows:
+\begin{enumerate}
+\item Recursively traverse the AST to create
+an intermediate representation (IR) of the program.
+\item Construct a control-flow graph.
+\item Compute the results of the analysis using chaotic iterations.
+\end{enumerate}
+
+The input for this last exercise is a (single) text file containing an \plname
+program in the subset defined below, and the output is a (single) text file that contains an indication of whether the program does not access uninitialized variables or a list of such variables if it does. 
+
+\section{The Input Programs}
+\subsection{Syntax}
+To simplify the exercise, you may assume that the program consists only of a main function with signature \texttt{void main()}. Furthermore, 
+\texttt{main} may only use (global and local) variables of type \texttt{int} and the library function \texttt{PrintInt}.
+
+\subsection{Semantics of Initializations}
+Recall that both global and local variables may be initialized when defined.
+The initial value can be any numerical expression over previously defined variables.
+Thus, when these initializations occur, they should be in the same order of appearance as in the original program. 
+Specifically, before entering main, all global variables with initialized values
+should be evaluated.
+ 
+\section{Uninitialized Variables Analysis}
+
+One of the most common programming errors is the use of a
+variable before its definition. This undefined value may produce incorrect
+results, memory violations, unpredictable behaviors, and program failure.
+More specifically, \emph{used-before-set} refers to the error occurring when a program uses a variable that has not been assigned an (initialized) value. This uninitialized variable, once used in
+a calculation, can be quickly propagated throughout the entire program, and
+anything may happen. The program may produce different results each time it
+runs, may crash for no apparent reason, or may behave unpredictably~\cite{uninitvar}. 
+
+In this exercise, you are asked to implement a \emph{conservative} compile-time dataflow analysis that detects used-before-set errors.
+In class, we have seen a way to implement a used-before-def analysis based on reaching definitions (see, e.g., \cite[Sec. 9.2.4]{dragonbook}).
+Here, you are asked to design a slightly more sophisticated analysis where a definition sets a variable \texttt{x} to an initialized value only if the value assigned to \texttt{x}  is initialized.
+
+More formally, a program may have a used-before-set-a-valid-value error\footnote{For brevity, from now on we will refer to such an error as a used-before-set error.} involving variable \texttt{x} if there is a path $p$ from the start of the program to a program point in which an expression using \texttt{x} is evaluated, and path $p$ does not contain an assignment which sets \texttt{x} to an \emph{initialized value}. An assignment $l: \texttt{x} := exp$ in path $p$ sets \texttt{x} to an initialized value if $exp$ consists of constants and variables that were assigned an initialized value prior to $l: \texttt{x} := exp$ in $p$.
+Stated differently, assigning a variable with an expression involving an uninitialized value does not initialize that variable.
+Your analysis should detect and report all variables possibly involved in used-before-set errors. The following examples clarify these notions. 
+
+The program in \cref{fig:example-immediate} has use-before-set errors involving variables
+\texttt{g} and \texttt{y}.
+Note that \text{g} is used in an assignment command while \texttt{y} is used as part of a boolean condition.
+
+
+\begin{figure}
+\centering
+\begin{lstlisting}[language=C]
+int g;
+void main() {
+  int x;
+  int y;
+  int z;
+  
+  x := 1;
+  if (y>0)  { z := x + g + 1;  x := x + 1;}
+}
+
+// expected output:
+// g
+// y
+\end{lstlisting}
+\caption{A program accessing uninitialized local and global variables.}
+\label{fig:example-immediate}
+\end{figure} 
+
+The program in \cref{fig:example-flow} has use-before-set errors involving variables
+\texttt{g}, \texttt{x}, and \texttt{y}.
+Note that \texttt{x} is assigned a value before it is used. 
+This assignment, however, is to an expression containing \texttt{g}, which is uninitialized at that point. 
+
+
+\begin{figure}
+\centering
+\begin{lstlisting}[language=C]
+int g;
+void main() {
+  int x := g * 2;
+  int y;
+  int z;
+  
+  g := 1;
+  if (y>0)  { z := x + 1; }
+}
+
+// expected output:
+// g
+// x
+// y
+\end{lstlisting}
+\caption{A program accessing uninitialized local and global variables.}
+\label{fig:example-flow}
+\end{figure} 
+ 
+
+The program in \cref{fig:example-loop} also has use-before-set errors involving variables
+\texttt{g}, \texttt{x}, and \texttt{y}.
+Note that the use of \texttt{g} in \texttt{PrintInt(g)} is considered a use-before-set error because the loop body may never execute.
+Also, note that although \texttt{y} is involved in two potential use-before-def errors, it is printed only once.
+
+The analysis \emph{should not} try to infer the infeasibility of passes at compile time. For example, we replace the declaration of \texttt{y} in \Cref{fig:example-loop} with 
+\texttt{int y := 10;}
+then the analysis should still report that variables \texttt{x} and \texttt{g} may be used-before-set, although the body of the loop in the program in \cref{fig:example-loop} is always executed and thus assigns an initialized value to \texttt{g}.
+
+
+\begin{figure}
+\centering
+\begin{lstlisting}[language=C]
+int g;
+void main() {
+  int x;
+  int y;
+  int z;
+  
+  while (y>0)  { z := x + 1;  g:=1; y:= y-1;}
+  PrintInt(g);
+}
+
+// expected output:
+// g
+// x
+// y
+\end{lstlisting}
+\caption{A program accessing uninitialized local and global variables.}
+\label{fig:example-loop}
+\end{figure} 
+
+The program in \cref{fig:example-ok}  has no use-before-set errors. 
+
+
+\begin{figure}
+\centering
+\begin{lstlisting}[language=C]
+int g0 := 0;
+int g:= g0 + 1;
+void main() {
+  int x := g * 2 + 3;
+  int y := 10;
+  int z;
+  int w;
+  
+  while (y>0)  { z := x + 1 + y;  g:=1; y:= y-1;}
+  PrintInt(g);
+}
+
+// expected output:
+// - - OK - -
+\end{lstlisting}
+\caption{A program which does not access uninitialized variables.}
+\label{fig:example-ok}
+\end{figure} 
+
+\section{Submission Guidelines}
+ 
+\subsection{Input}
+The input for this exercise is a single text file, the input program in the assumed subset of  \plname.
+
+\subsection{Output}
+The output is a single text file that contains either the string \texttt{--OK--}
+if there are no read accesses from uninitialized variables or a sorted list of the names of the uninitialized variables that were accessed. The exercise's skeleton contains helper functions that format the output.
+
+\subsection{Skeleton}
+The skeleton for this exercise can be found \href{https://github.com/davidtr1037/compilation-tau/tree/master/src/ex4-dfa}{here}.
+The skeleton contains a partial implementation of the IR, which you may adapt to your needs.
+
+The skeleton also contains code for converting the IR into MIPS code, but you do not need to use this code in this exercise.
+
+The makefile must be located in the following path:
+\begin{itemize}
+    \item ex4-dfa/Makefile
+\end{itemize}
+This makefile will build the analyzer (a runnable jar file) in the following path:
+\begin{itemize}
+    \item ex4-dfa/ANALYZER
+\end{itemize}
+Feel free to reuse the makefile supplied in the skeleton,
+or write a new one if you want to.
+
+\subsection{Command-line usage}
+\textit{ANALYZER} receives two parameters (file paths):
+\begin{itemize}
+    \item \textit{input} (input file path)
+    \item \textit{output} (output file path containing the MIPS code)
+\end{itemize}
+
+\subsection{Compiling}
+To build the skeleton, run the following command (in the \textit{src/ex4-dfa} directory): \\
+\texttt{\$ make compile} \\
+This performs the following steps:
+\begin{itemize}
+    \item Generates the relevant files using jflex/cup
+    \item Compiles the modules into \textit{ANALYZER}
+\end{itemize}
+
+%The skeleton code for this exercise resides (as usual)
+%in subdirectory EX4 of the course repository
+%(\url{https://github.com/davidtr1037/COMPILATION_TAU_FOR_STUDENTS/tree/master/FOLDER_3_SOURCE_CODE/EX4}).
+%COMPILATION/EX4 should contain a makefile building your source files to a
+%runnable jar file called COMPILER (note the lack of the .jar suffix).
+%Feel free to use the makefile supplied in the course repository,
+%or write a new one if you want to. 
+%Before you submit, make sure that your exercise compiles and runs
+%on the school server: $nova.cs.tau.ac.il$.
+%This is the formal running environment of the course.
+%
+%\paragraph{Execution parameters}
+%compiler receives $2$ input file names:\\ \\
+%InputProgram.txt\\
+%OutputMIPS.s
+
+%\section{Additional Notes}
+%\subsection{Global Variables}
+%Note that when a global variable is initialized,
+%then the initial value is either a constant or another global variable.
+
+\bibliographystyle{unsrt}
+\bibliography{ex4-dfa}
+
+\end{document}
