@@ -80,13 +80,11 @@ Specifically, before entering main, all global variables with initialized values
  
 \section{Uninitialized Variables Analysis}
 
-One of the most common programming errors is the use of a
-variable before its definition. This undefined value may produce incorrect
-results, memory violations, unpredictable behaviors, and program failure.
-More specifically, \emph{used-before-set} refers to the error occurring when a program uses a variable that has not been assigned an (initialized) value. This uninitialized variable, once used in
-a calculation, can be quickly propagated throughout the entire program, and
-anything may happen. The program may produce different results each time it
-runs, may crash for no apparent reason, or may behave unpredictably~\cite{uninitvar}. 
+One of the most common programming errors is the use of a variable before its definition.
+This undefined value may produce incorrect results, memory violations, unpredictable behaviors, and program failure.
+More specifically, \emph{used-before-set} refers to the error occurring when a program uses a variable that has not been assigned an (initialized) value.
+This uninitialized variable, once used in a calculation, can be quickly propagated throughout the entire program.
+The program may produce different results each time it runs, may crash for no apparent reason, or may behave unpredictably~\cite{uninitvar}. 
 
 In this exercise, you are asked to implement a \emph{conservative} compile-time dataflow analysis that detects used-before-set errors.
 In class, we have seen a way to implement a used-before-def analysis based on reaching definitions (see, e.g., \cite[Sec. 9.2.4]{dragonbook}).
@@ -99,7 +97,6 @@ Your analysis should detect and report all variables possibly involved in used-b
 The program in \cref{fig:example-immediate} has use-before-set errors involving variables
 \texttt{g} and \texttt{y}.
 Note that \text{g} is used in an assignment command while \texttt{y} is used as part of a boolean condition.
-
 
 \begin{figure}
 \centering
@@ -115,8 +112,8 @@ void main() {
 }
 
 // expected output:
-// g
-// y
+g
+y
 \end{lstlisting}
 \caption{A program accessing uninitialized local and global variables.}
 \label{fig:example-immediate}
@@ -126,7 +123,6 @@ The program in \cref{fig:example-flow} has use-before-set errors involving varia
 \texttt{g}, \texttt{x}, and \texttt{y}.
 Note that \texttt{x} is assigned a value before it is used. 
 This assignment, however, is to an expression containing \texttt{g}, which is uninitialized at that point. 
-
 
 \begin{figure}
 \centering
@@ -142,15 +138,14 @@ void main() {
 }
 
 // expected output:
-// g
-// x
-// y
+g
+x
+y
 \end{lstlisting}
 \caption{A program accessing uninitialized local and global variables.}
 \label{fig:example-flow}
 \end{figure} 
  
-
 The program in \cref{fig:example-loop} also has use-before-set errors involving variables
 \texttt{g}, \texttt{x}, and \texttt{y}.
 Note that the use of \texttt{g} in \texttt{PrintInt(g)} is considered a use-before-set error because the loop body may never execute.
@@ -159,7 +154,6 @@ Also, note that although \texttt{y} is involved in two potential use-before-def 
 The analysis \emph{should not} try to infer the infeasibility of passes at compile time. For example, we replace the declaration of \texttt{y} in \Cref{fig:example-loop} with 
 \texttt{int y := 10;}
 then the analysis should still report that variables \texttt{x} and \texttt{g} may be used-before-set, although the body of the loop in the program in \cref{fig:example-loop} is always executed and thus assigns an initialized value to \texttt{g}.
-
 
 \begin{figure}
 \centering
@@ -175,16 +169,15 @@ void main() {
 }
 
 // expected output:
-// g
-// x
-// y
+g
+x
+y
 \end{lstlisting}
 \caption{A program accessing uninitialized local and global variables.}
 \label{fig:example-loop}
 \end{figure} 
 
 The program in \cref{fig:example-ok}  has no use-before-set errors. 
-
 
 \begin{figure}
 \centering
