@@ -1,0 +1,403 @@
+%%%%%%%%%%%%%%%%%%
+% DOCUMENT CLASS %
+%%%%%%%%%%%%%%%%%%
+\documentclass{article}
+
+%%%%%%%%%%%%
+% PACKAGES %
+%%%%%%%%%%%%
+\usepackage{hyperref}
+\usepackage{amsmath}
+\usepackage{multirow}
+\usepackage{placeins}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{xspace}
+\usepackage[capitalise]{cleveref}
+
+\newcommand{\nr}[1]{{\color{red}[#1]}}
+
+%%%%%%%%%%%%%%%%%%
+% BEGIN DOCUMENT %
+%%%%%%%%%%%%%%%%%%
+\begin{document}
+
+%%%%%%%%%
+% TITLE %
+%%%%%%%%%
+\title{Exercise 4 (Code Generation)\\
+\large{(for students in the \emph{Iron Swords 28} group)}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% AUTHOR = COURSE NAME HERE %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\author{Compilation 0368:3133}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% DATE = SUBMISSION DATE HERE %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\date{Due 25/5/2023 before 23:59}
+
+%%%%%%%%%
+% TITLE %
+%%%%%%%%%
+\maketitle
+
+\newcommand{\plname}{\textbf{L}\ }
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% SECTION :: Introduction %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Introduction}
+In this exercise, you are going to finish the implementation of your compiler from \plname to MIPS.
+This exercise is designed especially for students in the \emph{Iron Swords 28} group who wish to do a home exam and get a regular (0..100) grade. Thus, this exercise should be done individually by every student. (Obviously, you can use the code your group wrote in the previous exercises.) In your final grade, the (up to) 60 points you were supposed to get according to your grade in the class exam will be replaced by (up to) 30 points for your home exam and (up to) 30 points for this exercise.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% SECTION :: Programming Assignment %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Programming Assignment}
+In this exercise, you are asked to implement the code generation phase in the compiler for \plname programs.
+The chosen destination language is \href{https://en.wikipedia.org/wiki/MIPS_architecture}{MIPS}
+assembly, favoured for it straightforward syntax,
+\href{https://en.wikipedia.org/wiki/SPIM}{complete toolchain}
+and available tutorials.
+The exercise can be roughly divided into three parts as follows:
+\begin{enumerate}
+\item Recursively traverse the AST to create
+an intermediate representation (IR) of the program.
+\item Perform liveness analysis, build the interference graph,
+and allocate those hundreds (or so) temporaries into 10 physical registers (t0-t9).
+\item Translate the IR to MIPS instructions using physical registers instead of temporaries.
+\end{enumerate}
+The input for this last exercise is a (single) text file containing a \plname
+program and the output is a (single) text file that contains the translation
+of the input program into MIPS assembly.
+
+\section{The Input Programs}
+
+\subsection{Syntax}
+In this exercise, you should handle the entire \plname{} programming language. (Recall that in exercise 4 (dataflow) you were allowed to assume that the input program is written in a simple subset of \plname.)
+
+
+\subsection{The \plname Semantics}
+This section describes the semantics of \plname,
+and provides a multitude of example programs.
+  
+\subsubsection{Binary Operations}
+\paragraph{Integers} in \plname are artificially bounded between $-2^{15}$ and $2^{15}-1$.
+The semantics of integer binary operations in \plname is therefore somewhat different
+than that of standard programming languages.
+It is presented in Table \ref{Table_Semantics_Of_Rio_Mare_Binary_Operations_Between_Integers},
+and to distinguish \plname operators from the usual arithmetic signs,
+we shall use a \plname subscript inside brackets:
+($*_{[\plname]}$, $+_{[\plname]}$ etc.)
+\begin{table}[h]
+\centering
+\begin{tabular}{|p{10cm}|}
+\hline
+\[
+a ~ *_{[\plname]} ~ b ~ = ~
+\begin{cases} 
+-2^{15}  ~ & ~ ~ ~ ~ ~ ~ ~ ~ \text{when} ~ a*b \in (-\infty, -2^{15}] \\
+a*b      ~ & ~ ~ ~ ~ ~ ~ ~ ~ \text{when} ~ a*b \in (-2^{15},2^{15}-1] \\
+2^{15}-1 ~ & ~ ~ ~ ~ ~ ~ ~ ~ otherwise                                \\
+\end{cases}
+\]
+\\ \hline
+\[
+a ~ +_{[\plname]} ~ b ~ = ~
+\begin{cases} 
+-2^{15}  ~ & ~ ~ ~ ~ ~ ~ ~ ~ \text{when} ~ a+b \in (-\infty, -2^{15}] \\
+a+b      ~ & ~ ~ ~ ~ ~ ~ ~ ~ \text{when} ~ a+b \in (-2^{15},2^{15}-1] \\
+2^{15}-1 ~ & ~ ~ ~ ~ ~ ~ ~ ~ otherwise                                \\
+\end{cases}
+\]
+\\ \hline
+\[
+a ~ -_{[\plname]} ~ b ~ = ~
+\begin{cases} 
+-2^{15}  ~ & ~ ~ ~ ~ ~ ~ ~ ~ \text{when} ~ a-b \in (-\infty, -2^{15}] \\
+a-b      ~ & ~ ~ ~ ~ ~ ~ ~ ~ \text{when} ~ a-b \in (-2^{15},2^{15}-1] \\
+2^{15}-1 ~ & ~ ~ ~ ~ ~ ~ ~ ~ otherwise                                \\
+\end{cases}
+\]
+\\ \hline
+\[
+a ~ /_{[\plname]} ~ b ~ = ~
+\begin{cases} 
+-2^{15}             ~ & ~ ~ ~ ~ ~ ~ ~ ~ \text{when} ~ \lfloor a/b \rfloor \in (-\infty, -2^{15}] \\
+\lfloor a/b \rfloor ~ & ~ ~ ~ ~ ~ ~ ~ ~ \text{when} ~ \lfloor a/b \rfloor \in (-2^{15},2^{15}-1] \\
+2^{15}-1            ~ & ~ ~ ~ ~ ~ ~ ~ ~ otherwise                                                \\
+\end{cases}
+\]
+\\ \hline
+\end{tabular}
+\caption{Semantics of \plname binary operations between integers
+\label{Table_Semantics_Of_Rio_Mare_Binary_Operations_Between_Integers}}
+\end{table}
+\paragraph{Strings} can be concatenated with binary operation $+$,
+and tested for (contents) equality with binary operator $=$.
+When concatenating two (null terminated) strings $\{s_{i}\}_{i=1}^{2}$,
+the resulting string $s_{1}s_{2}$ is allocated on the heap,
+and should be null terminated. The result of testing contents equality
+is either $1$ when they are equal, or $0$ otherwise.
+\paragraph{Arrays}
+Testing equality of arrays should be done by comparing the address values of the two arrays.
+The result is $1$ if they are equal and otherwise $0$.
+\paragraph{Objects}
+Testing equality of objects should be done by comparing the address values of the two objects.
+The result is $1$ if they are equal and otherwise $0$.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% SUB-SECTION :: If and While Statements %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{If and While Statements}
+\label{subsection_If_And_While_Statements}
+\paragraph{While statements} behave similarly to (practically) all programming languages:
+before executing their body, their condition is evaluated.
+If it equals $0$, the body is ignored, and control is transferred
+to the statement immediately after the body.
+Otherwise, the body is executed, then the condition is evaluated again, and so forth. 
+\paragraph{If statements} behave similarly to (practically) all programming languages:
+before executing their body, their condition is evaluated.
+If it equals $0$, the body is ignored, and control is transferred
+to the statement immediately after the body.
+Otherwise, the body is executed exactly once,
+then control is transferred to the statement immediately after the body. 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% SUB-SECTION :: Function Calls and Order of Evaluation %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Function Calls and Order of Evaluation}
+\label{subsection_Function_Calls_And_Order_Of_Evaluation}
+\paragraph{When calling a function} with more than one input parameter,
+the evaluation order matters. You should evaluate the sent parameters
+from left to right, so for example, the following code should print \verb"32766":\footnote{Recall \Cref{Table_Semantics_Of_Rio_Mare_Binary_Operations_Between_Integers} and that $2^{15}-1=32767$.} 
+\begin{figure}[h]
+\centering
+\begin{tabular}{|l|}
+\hline
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+                                               \\
+\verb"class counter { int i := 32767; }"       \\
+\verb"counter c := nil;"                       \\
+\verb"int inc(){ c.i := c.i + 1; return 0;}"   \\
+\verb"int dec(){ c.i := c.i - 1; return 9;}"   \\
+\verb"int foo(int m, int n){ return c.i; }"    \\
+\verb"void main()"                             \\
+\verb"{"                                       \\
+\verb"    c := new counter;"                                       \\
+\verb"    PrintInt(foo(inc(),dec()));"         \\
+\verb"}"                                       \\
+                                               \\
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\hline
+\end{tabular}
+\caption{Evaluation order of a called function's parameters matters.
+\label{Figure_Code_Example_Evaluation_Order_Function_Call}}
+\end{figure}
+%You may assume that return values of void functions are not used as \textit{rvalues} (for example: \texttt{x = f()} ).
+\paragraph{When initializing global variables}
+\label{Paragraph_When_Evaluating_Global_Variables}
+order matters,
+and it should be the same as the order of appearance in the original program.
+Note that before entering main, all global variables with initialized values
+should be evaluated.
+\paragraph{When evaluating assignments} order matters
+and the left-hand side should be evaluated first.
+The same applies to the evaluation of \textit{all} binary operations.
+\paragraph{Initializing class data members}
+should occur during the construction of the object.
+The order in which you initialize the data members is irrelevant.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% SUB-SECTION :: Runtime Checks %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Runtime Checks}
+\label{subsection_Runtime_Checks}
+\plname enforces three kinds of runtime checks:
+division by zero, invalid pointer dereference and out of bound array access.
+\paragraph{Division by zero} should be handled by printing ``Illegal Division By Zero",
+and then exit gracefully by using the exit system call.
+The following code will result in such behaviour:
+\[
+\verb"int i:= 6; while (i+1) { int j := 8/i; i := i-1; }"
+\]
+\paragraph{Invalid pointer dereference} can occur when trying to
+access data members or methods of uninitialized class variable.
+For example, here:
+\[
+\verb"class Father { int i; int j; } Father f; int i := f.i;"
+\]
+Similarly, assigning \verb"NIL" to \verb"f" should clearly trigger the same behaviour:
+\[
+\verb"class Father { int i; int j; } Father f := NIL; int i := f.i;"
+\]
+When an invalid pointer dereference occurs, the program should print
+``Invalid Pointer Dereference" and then then exit gracefully by using the exit system call.
+\paragraph{Out of bound array access} should be handled by printing "Access Violation" 
+and then exit gracefully by using the exit system call.
+The following code demonstrates an illegal array access:
+\[
+\verb"array IntArray = int[]; IntArray A := new int[6]; int i := A[18];"
+\]
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% SUB-SECTION :: System Calls %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{System Calls}
+\label{subsection_System_Calls}
+MIPS supports a limited set of system calls,
+out of which we will need only four:
+printing an integer,
+printing a string,
+allocating heap memory and
+exit the program.
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|l|l|l|}
+\hline
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+system call example & MIPS code & Remarks      \\
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\hline
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\verb"PrintInt(17)" & \verb"li $a0,17" & \\
+                    & \verb"li $v0,1"  & \\
+                    & \verb"syscall"   & \\
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\hline
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\verb"string s:="``\verb"abc"" & \verb".data"                              & Printed string must be   \\
+\verb"PrintString(s)"          & \verb"myLovelyStr: .asciiz "``\verb"abc"" & null terminated.         \\
+                               & \verb".text"                              & It can be allocated      \\
+                               & \verb"main:"                              & inside the text section, \\
+                               & \verb"la $a0,myLovelyStr"                 & or in the heap.          \\
+                               & \verb"li $v0,4"                           &                          \\
+                               & \verb"syscall"                            &                          \\
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\hline
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\verb"Malloc(17)" & \verb"li $a0,17" & allocated address         \\
+                  & \verb"li $v0,9"  & is returned in \verb"$v0" \\
+                  & \verb"syscall"   &                           \\
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\hline
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\verb"Exit()"    & \verb"li $v0,10" & Make sure every              \\
+                 & \verb"syscall"   & MIPS program ends with exit. \\
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\hline
+\end{tabular}
+\caption{Relevant MIPS system calls.
+\label{Table_MIPS_System_Calls}}
+\end{table}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% SUB-SECTION :: System Calls %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Program entry point (main)}
+\label{subsection_Program_Entry_Point_Main}
+Every (valid) \plname program has a main function with signature: \verb"void main()".
+This function is the entry point of execution (see also \ref{Paragraph_When_Evaluating_Global_Variables}).
+
+%%%%%%%%%%%%%%%%%%%%
+% SECTION :: Input %
+%%%%%%%%%%%%%%%%%%%%
+\section{Input}
+The input for this exercise is a single text file, the input \plname program.
+
+%%%%%%%%%%%%%%%%%%%%%
+% SECTION :: Output %
+%%%%%%%%%%%%%%%%%%%%%
+\section{Output}
+The output is a single text file that contains the
+translation of the input program into MIPS assembly or an error message indicating the failure of register allocation.
+
+\section{Skeleton}
+To run the skeleton use the following command:
+\begin{itemize}
+\item make everything
+\end{itemize}
+This will create a file with the compiled MIPS code (MIPS.txt), and a file with the output of SPIM (MIPS\_OUTPUT.txt).
+
+\section{SPIM}
+We are going to use SPIM 8.0 in the project.
+Can be installed using:
+\begin{itemize}
+\item sudo apt-get install spim xspim
+\end{itemize}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% SECTION :: Submission Guidelines %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Submission Guidelines}
+The skeleton for this exercise can be found \href{https://github.com/davidtr1037/compilation-tau/tree/master/src/ex4}{here}.
+The makefile must be located in the following path:
+\begin{itemize}
+    \item ex4-mips/Makefile
+\end{itemize}
+This makefile will build the compiler (a runnable jar file) in the following path:
+\begin{itemize}
+    \item ex4-mips/COMPILER
+\end{itemize}
+Feel free to reuse the makefile supplied in the skeleton,
+or write a new one if you want to.
+
+\subsection{Command-line usage}
+\textit{COMPILER} receives 2 parameters (file paths):
+\begin{itemize}
+    \item \textit{input} (input file path)
+    \item \textit{output} (output file path containing the MIPS code)
+\end{itemize}
+
+\subsection{Skeleton}
+You are encouraged to use the makefile provided by the skeleton.
+\subsubsection{Compiling}
+To build the skeleton, run the following command (in the \textit{src/ex4-mips} directory): \\
+\texttt{\$ make compile} \\
+This performs the following steps:
+\begin{itemize}
+    \item Generates the relevant files using jflex/cup
+    \item Compiles the modules into \textit{COMPILER}
+\end{itemize}
+
+%The skeleton code for this exercise resides (as usual)
+%in subdirectory EX4 of the course repository
+%(\url{https://github.com/davidtr1037/COMPILATION_TAU_FOR_STUDENTS/tree/master/FOLDER_3_SOURCE_CODE/EX4}).
+%COMPILATION/EX4 should contain a makefile building your source files to a
+%runnable jar file called COMPILER (note the lack of the .jar suffix).
+%Feel free to use the makefile supplied in the course repository,
+%or write a new one if you want to. 
+%Before you submit, make sure that your exercise compiles and runs
+%on the school server: $nova.cs.tau.ac.il$.
+%This is the formal running environment of the course.
+%
+%\paragraph{Execution parameters}
+%compiler receives $2$ input file names:\\ \\
+%InputProgram.txt\\
+%OutputMIPS.s
+
+\section{Additional Notes}
+\subsection{Global Variables}
+You may assume that if a global variable is initialized,
+then the initial value is a constant (i.e., string, integer, nil).
+\subsection{PrintInt}
+When printing an integer, print an additional space after the integer.
+\subsection{Register Allocation}
+Note that you are performing register allocation on the IR.
+This is OK since the IR is rather low-level--all operations are performed between temporaries (virtual registers) and global and local variables are accessed via loads and stores. 
+Thus, you should allocate registers only to temporaries.
+You should only allocate registers t0-t9.
+
+You should implement only simplification-based register allocation. 
+Specifically, you are \emph{not} required to implement register spilling or MOV instruction coalescing.  If you fail to allocate registers due to the need to perform an actual spill, the compiler should output an error message ``Register Allocation Failed'' and abort.
+
+\subsection{MIPS Code Generation}
+
+The translation from IR commands to MIPS commands is rather straightforward.
+If the translation requires the use of registers beyond those allocated to the temporaries in the IR command (as may happen in array accesses and method calls), you can use registers s0-s9.
+
+Note that registers t0-t9 are caller-saved, and registers s0-s9 are callee-saved. Due to the simple usage of s registers in this exercise, you are not required to save and restore callee-saved registers. 
+
+\end{document}

@@ -29,3 +29,6 @@ exercises/ex-ir/ex4-dfa.fdb_latexmk
 exercises/ex-ir/ex4-dfa.blg
 exercises/ex-ir/ex4-dfa.bbl
 .DS_Store
+exercises/ex-mips/ex4-mips.pdf
+exercises/ex-mips/ex4-mips.fdb_latexmk
+exercises/ex-mips/ex4-mips.fls
